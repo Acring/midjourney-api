@@ -3,6 +3,7 @@ import {
   LoadingHandler,
   MJConfig,
   MJConfigParam,
+  MJMessage,
 } from "./interfaces";
 import { MidjourneyApi } from "./midjourney.api";
 import { MidjourneyMessage } from "./discord.message";
@@ -36,11 +37,7 @@ export class Midjourney extends MidjourneyMessage {
       return this;
     }
     //if auth failed, will throw error
-    if (this.config.ServerId) {
-      await this.MJApi.getCommand("settings");
-    } else {
-      await this.MJApi.allCommand();
-    }
+    await this.MJApi.allCommand();
     if (this.wsClient) return this;
     this.wsClient = new WsMessage(this.config, this.MJApi);
     await this.wsClient.onceReady();
@@ -240,6 +237,25 @@ export class Midjourney extends MidjourneyMessage {
       loading,
     });
   }
+
+    // async Upscale4x({
+    //   msgId,
+    //   msg
+    // }: {
+    //   msgId: string;
+    //   msg: MJMessage
+    // }){
+    //   // upsample_v6_2x_creative
+    //   // upsample_v5_4x
+    //   return await this.Custom({
+    //   customId: `MJ::JOB::upsample::${index}::${hash}`,
+    //   msgId,
+    //   content,
+    //   flags,
+    //   loading,
+    // });
+
+    // }
 
   async Custom({
     msgId,
