@@ -4,18 +4,18 @@ import {
   MJConfig,
   MJConfigParam,
   MJMessage,
-} from "./interfaces";
-import { MidjourneyApi } from "./midjourney.api";
-import { MidjourneyMessage } from "./discord.message";
+} from './interfaces';
+import { MidjourneyApi } from './midjourney.api';
+import { MidjourneyMessage } from './discord.message';
 import {
   toRemixCustom,
   custom2Type,
   nextNonce,
   random,
   base64ToBlob,
-} from "./utils";
-import { WsMessage } from "./discord.ws";
-import { faceSwap } from "./face.swap";
+} from './utils';
+import { WsMessage } from './discord.ws';
+import { faceSwap } from './face.swap';
 export class Midjourney extends MidjourneyMessage {
   public config: MJConfig;
   private wsClient?: WsMessage;
@@ -23,7 +23,7 @@ export class Midjourney extends MidjourneyMessage {
   constructor(defaults: MJConfigParam) {
     const { SalaiToken } = defaults;
     if (!SalaiToken) {
-      throw new Error("SalaiToken are required");
+      throw new Error('SalaiToken are required');
     }
     super(defaults);
     this.config = {
@@ -48,7 +48,7 @@ export class Midjourney extends MidjourneyMessage {
     const settings = await this.Settings();
     if (settings) {
       // this.log(`settings:`, settings.content);
-      const remix = settings.options.find((o) => o.label === "Remix mode");
+      const remix = settings.options.find((o) => o.label === 'Remix mode');
       if (remix?.style == 3) {
         this.config.Remix = true;
         this.log(`Remix mode enabled`);
@@ -66,7 +66,7 @@ export class Midjourney extends MidjourneyMessage {
     }
 
     const nonce = nextNonce();
-    this.log(`Imagine`, prompt, "nonce", nonce);
+    this.log(`Imagine`, prompt, 'nonce', nonce);
     const httpStatus = await this.MJApi.ImagineApi(prompt, nonce);
     if (httpStatus !== 204) {
       throw new Error(`ImagineApi failed with status ${httpStatus}`);
@@ -108,7 +108,7 @@ export class Midjourney extends MidjourneyMessage {
     if (!settings) {
       throw new Error(`Settings not found`);
     }
-    const reset = settings.options.find((o) => o.label === "Reset Settings");
+    const reset = settings.options.find((o) => o.label === 'Reset Settings');
     if (!reset) {
       throw new Error(`Reset Settings not found`);
     }
@@ -155,7 +155,7 @@ export class Midjourney extends MidjourneyMessage {
     if (httpStatus !== 204) {
       throw new Error(`RelaxApi failed with status ${httpStatus}`);
     }
-    return wsClient.waitContent("prefer-remix");
+    return wsClient.waitContent('prefer-remix');
   }
   async Describe(imgUri: string) {
     const wsClient = await this.getWsClient();
@@ -238,24 +238,35 @@ export class Midjourney extends MidjourneyMessage {
     });
   }
 
-    // async Upscale4x({
-    //   msgId,
-    //   msg
-    // }: {
-    //   msgId: string;
-    //   msg: MJMessage
-    // }){
-    //   // upsample_v6_2x_creative
-    //   // upsample_v5_4x
-    //   return await this.Custom({
-    //   customId: `MJ::JOB::upsample::${index}::${hash}`,
-    //   msgId,
-    //   content,
-    //   flags,
-    //   loading,
-    // });
+  //
+  async Other({
+    msgId,
+    msg,
+    opLabel,
+  }: {
+    msgId: string;
+    msg: MJMessage;
+    opLabel: string;
+  }) {
+    if (!msg.options?.find((option) => option.label === opLabel)) {
+      throw new Error(`command: ${opLabel} not found`);
+    }
 
-    // }
+    const customId = msg.options.find(
+      (option) => option.label === opLabel
+    )?.custom;
+
+    console.log('customId', customId);
+    if (!customId) {
+      throw new Error(`customId not found`);
+    }
+    return await this.Custom({
+      customId,
+      msgId,
+      content: msg.content,
+      flags: msg.flags,
+    });
+  }
 
   async Custom({
     msgId,
@@ -290,12 +301,12 @@ export class Midjourney extends MidjourneyMessage {
         messageId: msgId,
         prompt: content,
         onmodal: async (nonde, id) => {
-          if (content === undefined || content === "") {
-            return "";
+          if (content === undefined || content === '') {
+            return '';
           }
           const newNonce = nextNonce();
           switch (custom2Type(customId)) {
-            case "customZoom":
+            case 'customZoom':
               const httpStatus = await this.MJApi.CustomZoomImagineApi({
                 msgId: id,
                 customId,
@@ -308,9 +319,9 @@ export class Midjourney extends MidjourneyMessage {
                 );
               }
               return newNonce;
-            case "variation":
+            case 'variation':
               if (this.config.Remix !== true) {
-                return "";
+                return '';
               }
               customId = toRemixCustom(customId);
               const remixHttpStatus = await this.MJApi.RemixApi({
@@ -326,13 +337,13 @@ export class Midjourney extends MidjourneyMessage {
               }
               return newNonce;
             default:
-              return "";
+              return '';
               throw new Error(`unknown customId ${customId}`);
           }
         },
       });
     }
-    if (content === undefined || content === "") {
+    if (content === undefined || content === '') {
       throw new Error(`content is required`);
     }
     return await this.WaitMessage(content, loading);
@@ -346,7 +357,7 @@ export class Midjourney extends MidjourneyMessage {
     flags,
     loading,
   }: {
-    level: "high" | "low" | "2x" | "1.5x";
+    level: 'high' | 'low' | '2x' | '1.5x';
     msgId: string;
     hash: string;
     content?: string;
@@ -355,16 +366,16 @@ export class Midjourney extends MidjourneyMessage {
   }) {
     let customId: string;
     switch (level) {
-      case "high":
+      case 'high':
         customId = `MJ::JOB::high_variation::1::${hash}::SOLO`;
         break;
-      case "low":
+      case 'low':
         customId = `MJ::JOB::low_variation::1::${hash}::SOLO`;
         break;
-      case "2x":
+      case '2x':
         customId = `MJ::Outpaint::50::1::${hash}::SOLO`;
         break;
-      case "1.5x":
+      case '1.5x':
         customId = `MJ::Outpaint::75::1::${hash}::SOLO`;
         break;
     }

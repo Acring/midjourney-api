@@ -15,6 +15,7 @@ async function main() {
     HuggingFaceToken: <string>process.env.HUGGINGFACE_TOKEN,
     Debug: true,
     Ws: true, // required  `Only you can see this`
+    // Remix: false, // required  `Only you can see this`
   });
   await client.Connect(); // required
   const Imagine = await client.Imagine(
@@ -23,44 +24,34 @@ async function main() {
       console.log('Imagine.loading', uri, 'progress', progress);
     }
   );
+
   console.log({ Imagine });
+
   if (!Imagine) {
     return;
   }
-  const reroll = await client.Reroll({
-    msgId: <string>Imagine.id,
-    hash: <string>Imagine.hash,
-    flags: Imagine.flags,
-    loading: (uri: string, progress: string) => {
-      console.log('Reroll.loading', uri, 'progress', progress);
-    },
-  });
-  console.log({ reroll });
 
-  const Variation = await client.Variation({
-    index: 2,
-    msgId: <string>Imagine.id,
-    hash: <string>Imagine.hash,
-    flags: Imagine.flags,
-    loading: (uri: string, progress: string) => {
-      console.log('Variation.loading', uri, 'progress', progress);
-    },
-  });
-
-  console.log({ Variation });
-  if (!Variation) {
-    return;
-  }
   const Upscale = await client.Upscale({
     index: 2,
-    msgId: <string>Variation.id,
-    hash: <string>Variation.hash,
-    flags: Variation.flags,
+    msgId: <string>Imagine.id,
+    hash: <string>Imagine.hash,
+    flags: Imagine.flags,
     loading: (uri: string, progress: string) => {
       console.log('Upscale.loading', uri, 'progress', progress);
     },
   });
   console.log({ Upscale });
+
+  if (!Upscale) {
+    return null;
+  }
+  const Upscale2x = await client.Other({
+    msgId: <string>Upscale?.id,
+    msg: Upscale,
+    opLabel: 'Upscale (Subtle)',
+  });
+
+  console.log(Upscale2x);
 
   client.Close();
 }
