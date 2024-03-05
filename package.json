@@ -1,5 +1,5 @@
 {
-  "name": "midjourney",
+  "name": "@acring/midjourney",
   "version": "4.0.0",
   "description": "Node.js client for the unofficial MidJourney API.",
   "main": "libs/index.js",
@@ -19,10 +19,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erictik/midjourney-client.git"
+    "url": "git+https://github.com/erictik/midjourney-api.git"
   },
   "keywords": [
-    "midjourney-client",
+    "midjourney-api",
     "midjourney"
   ],
   "engines": {
@@ -31,9 +31,9 @@
   "author": "Eric Yang <yanghao@10d.xin>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/erictik/midjourney-client/issues"
+    "url": "https://github.com/acring/midjourney-api/issues"
   },
-  "homepage": "https://github.com/erictik/midjourney-client#readme",
+  "homepage": "https://github.com/erictik/midjourney-api#readme",
   "devDependencies": {
     "@types/async": "^3.2.20",
     "@types/node": "^18.16.0",

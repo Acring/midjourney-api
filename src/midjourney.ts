@@ -238,8 +238,8 @@ export class Midjourney extends MidjourneyMessage {
     });
   }
 
-  //
-  async Other({
+  // 根据 operation label 执行命令，需要提供 msg 结果来获取 customId
+  async AnyCommand({
     msgId,
     msg,
     opLabel,
@@ -256,7 +256,6 @@ export class Midjourney extends MidjourneyMessage {
       (option) => option.label === opLabel
     )?.custom;
 
-    console.log('customId', customId);
     if (!customId) {
       throw new Error(`customId not found`);
     }

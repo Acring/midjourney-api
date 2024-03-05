@@ -19,7 +19,7 @@ async function main() {
   });
   await client.Connect(); // required
   const Imagine = await client.Imagine(
-    'Red hamster smoking a cigaret --fast',
+    'A paper plane is flying in the sky. --fast --niji 6',
     (uri: string, progress: string) => {
       console.log('Imagine.loading', uri, 'progress', progress);
     }
@@ -32,7 +32,7 @@ async function main() {
   }
 
   const Upscale = await client.Upscale({
-    index: 2,
+    index: 1,
     msgId: <string>Imagine.id,
     hash: <string>Imagine.hash,
     flags: Imagine.flags,
@@ -45,13 +45,13 @@ async function main() {
   if (!Upscale) {
     return null;
   }
-  const Upscale2x = await client.Other({
+  const Upscale2x = await client.AnyCommand({
     msgId: <string>Upscale?.id,
     msg: Upscale,
     opLabel: 'Upscale (Subtle)',
   });
 
-  console.log(Upscale2x);
+  console.log({ Upscale2x });
 
   client.Close();
 }
